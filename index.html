@@ -175,7 +175,7 @@ function renderP(){var el=document.getElementById("procList");el.innerHTML="";va
 function selP(p){cP=p;cT='cc';savedEcho="";savedCysto="";savedLuts=[];document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab==='cc');});renderP();renderN();updBtns();}
 
 function updBtns(){
-  var hl=cP&&(cP.active_problems.indexOf('lower urinary tract symptoms')>=0||cP.active_problems.indexOf('LUTS')>=0);
+  var hl=cP&&(cP.active_problems.indexOf('lower urinary tract symptoms')>=0||cP.active_problems.indexOf('LUTS')>=0||cP.active_problems.indexOf('luts_chief_complaint')>=0||cP.chief_complaint.indexOf('luts')>=0||cP.present_illness.indexOf('luts_symptoms')>=0);
   document.getElementById('lutsBtn').style.display=hl?'inline-block':'none';
   // Echo and Cysto always visible when procedure selected and on hx/plan tab
   var showTools=cP&&(cT==='hx'||cT==='plan');
@@ -189,19 +189,34 @@ function updBtns(){
 function switchTab(t){cT=t;document.querySelectorAll('.tab').forEach(function(e){e.classList.toggle('active',e.dataset.tab===t);});document.getElementById("sectionTitle").textContent=TN[t]||"";renderN();updBtns();}
 
 function applyGlobalData(text){
-  // Apply saved echo findings
+  // Apply saved echo findings - try all possible placeholders
   if(savedEcho){
-    text=text.replace(/\{echo_findings\}/g,savedEcho);
-    text=text.replace(/\{renal_echo\}/g,savedEcho);
+    var echoReplaced=false;
+    if(text.indexOf('{echo_findings}')>=0){text=text.replace(/\{echo_findings\}/g,savedEcho);echoReplaced=true;}
+    if(text.indexOf('{renal_echo}')>=0){text=text.replace(/\{renal_echo\}/g,savedEcho);echoReplaced=true;}
+    if(text.indexOf('{imaging_findings}')>=0){text=text.replace(/\{imaging_findings\}/g,savedEcho);echoReplaced=true;}
+    if(text.indexOf('{followup_echo_findings}')>=0){text=text.replace(/\{followup_echo_findings\}/g,savedEcho);echoReplaced=true;}
+    // If no placeholder found but we have echo data, append with prefix
+    if(!echoReplaced && (cT==='hx'||cT==='plan')){
+      text=text+"\n\nRenal ultrasonography revealed "+savedEcho+".";
+    }
   }
-  // Apply saved cystoscopy findings
+  // Apply saved cystoscopy findings - try all possible placeholders
   if(savedCysto){
-    text=text.replace(/\{cystoscopy_findings\}/g,savedCysto);
-    text=text.replace(/\{last_cystoscopy_findings\}/g,savedCysto);
+    var cystoReplaced=false;
+    if(text.indexOf('{cystoscopy_findings}')>=0){text=text.replace(/\{cystoscopy_findings\}/g,savedCysto);cystoReplaced=true;}
+    if(text.indexOf('{last_cystoscopy_findings}')>=0){text=text.replace(/\{last_cystoscopy_findings\}/g,savedCysto);cystoReplaced=true;}
+    // If no placeholder found but we have cysto data, append with prefix
+    if(!cystoReplaced && (cT==='hx'||cT==='plan')){
+      text=text+"\n\nCystoscopy revealed "+savedCysto+".";
+    }
   }
-  // Apply LUTS
+  // Apply LUTS - replace all variations
   if(savedLuts.length>0){
-    text=text.replace(/lower urinary tract symptoms(\s*\([^)]*\))?/g,"lower urinary tract symptoms ("+savedLuts.join(", ")+")");
+    var lutsStr=savedLuts.join(", ");
+    text=text.replace(/lower urinary tract symptoms(\s*\([^)]*\))?/g,"lower urinary tract symptoms ("+lutsStr+")");
+    text=text.replace(/\{luts_chief_complaint\}/g,"lower urinary tract symptoms ("+lutsStr+")");
+    text=text.replace(/\{luts_symptoms\}/g,lutsStr);
   }
   return text;
 }
