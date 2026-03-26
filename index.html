@@ -7,7 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:#f5f5f7;color:#1d1d1f;height:100vh;display:flex;flex-direction:column;}
-.top-bar{background:#fff;border-bottom:1px solid #d2d2d7;padding:12px 20px;flex-shrink:0;}
+.top-bar{background:#fff;position:relative;border-bottom:1px solid #d2d2d7;padding:12px 20px;flex-shrink:0;}
 .top-bar h1{font-size:22px;font-weight:700;}
 .top-bar .credit{font-size:11px;color:#86868b;margin-bottom:6px;}
 .search-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
@@ -62,6 +62,7 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 <body>
 <div class="top-bar">
   <h1>NTUH Urology Admission Note Generator</h1>
+  <div style="position:absolute;top:12px;right:20px;display:flex;gap:6px;"><button class="btn" id="modeAdm" onclick="switchMode('adm')" style="font-size:13px;padding:5px 14px;font-weight:700;background:#0071e3;color:#fff;border-color:#0071e3;">Admission Note</button><button class="btn" id="modePPu" onclick="switchMode('ppu')" style="font-size:13px;padding:5px 14px;font-weight:700;">PPu OPD</button></div>
   <div class="credit">Developed by CY Wu <span style="float:right;color:#86868b;font-size:10px;">v2.2 | Updated 2026-03-27 | 34 procedures, 9 groups | Echo/Cysto builder, LUTS selector</span></div>
   <div class="search-row"><label>Search:</label><input type="text" id="searchInput" placeholder="Type procedure name..."></div>
   <div class="kw-bar" id="kwBar"></div>
@@ -93,7 +94,221 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
     </div>
     <div class="note-area" id="noteArea" contenteditable="true"><span style="color:#86868b;font-family:-apple-system,sans-serif;">Select a procedure on the left.</span></div>
   </div>
+
+<div id="ppuScreen" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+  <div class="col-right" style="height:100%;margin:0;">
+    <div class="col-header">
+      <span id="ppuTitle">PPu OPD - Subjective</span>
+      <div class="btns">
+        <button class="btn" onclick="openModal('notesModal')">OPD Notes</button>
+        <button class="btn" onclick="copyPpu()">Copy</button>
+        <button class="btn" onclick="resetPpu()">Reset</button>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active" data-ppu="s" onclick="switchPpu('s')">Subjective</div>
+      <div class="tab" data-ppu="o" onclick="switchPpu('o')">Objective</div>
+      <div class="tab" data-ppu="a" onclick="switchPpu('a')">Assessment</div>
+      <div class="tab" data-ppu="p" onclick="switchPpu('p')">Plan</div>
+    </div>
+    <div class="note-area" id="ppuArea" contenteditable="true" style="flex:1;overflow-y:auto;"></div>
+  </div>
 </div>
+</div>
+
+
+<div class="modal-overlay" id="notesModal"><div class="modal" style="width:700px;max-height:90vh;">
+<h2>PPu OPD Teaching Notes</h2>
+<div style="overflow-y:auto;max-height:75vh;padding:0 10px;">
+<h2 style="margin:16px 0 8px;font-size:18px;">乾淨版門診教學筆記</h2>
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">說明</h3>
+<p style="font-size:13px;line-height:1.6;margin:4px 0;">本筆記係依 7 張手寫門診照片內容重新整理，已依主題歸類，並以較標準的泌尿科語言重寫。少數原始筆跡不清、語意無法完全確定之處，已於最後以「待核對」方式保留，不強行補寫。</p>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">一、LUTS、排尿機轉與門診功能評估</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Uroflowmetry（UFM）判讀重點</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">做 UFM 時，應避免病人刻意以腹壓或主動用力排尿，否則流速曲線可能失真。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">膀胱充盈度需足夠，檢查時應有足量尿意，可理解為接近「七分滿」的狀態。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">單看症狀不足以判斷排尿障礙，仍需結合 UFM 與整體臨床判讀。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. Pelvic floor / Kegel 訓練的重點</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">不只是要能將骨盆底肌收縮到最大，更重要的是能否完整放鬆。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">收縮要到 maximal contraction，放鬆也要回到接近 baseline／0 的狀態。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若病人排尿時過度用力或骨盆底無法放鬆，可能干擾排尿功能判讀。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. 坐姿排尿</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">對部分無法放鬆骨盆底或排尿時容易用力的病人，可考慮坐姿排尿，以利放鬆。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">4. Nocturia 與 nocturnal polyuria</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">夜尿的評估不能只問次數，若懷疑 nocturnal polyuria，應請病人完成 bladder diary / voiding diary。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">懷疑 nocturnal polyuria 時，應先做 diary，再決定進一步處理。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">5. Terminal dribbling</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Terminal dribbling 雖非 IPSS / AUA-SI 的正式計分項目，但仍可能影響病人的實際困擾與治療結果。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">年長病人常因膀胱收縮不全，排尿後仍有尿液滯留於 prostatic urethra 或 bulbar urethra，站起來後即出現滴尿。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">門診衛教可包括會陰部擠壓（milking the urethra）與陰莖擠壓排空餘尿，以減少滴尿。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">6. IPSS / AUA-SI 的臨床解讀</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">IPSS 與 AUA-SI 在臨床上名稱脈絡相近，需熟悉其使用背景。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">某些實際影響生活品質的症狀，如 terminal dribbling，雖未列入分數，仍不可忽略。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">二、Chronic prostatitis / CPPS</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. 症狀分布</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Chronic prostatitis / CPPS 的典型疼痛位置可包括會陰部與大腿內側。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">典型位置未必是 scrotal pain，需注意疼痛分布是否符合 pelvic pain syndrome 的特徵。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. 初步藥物試驗</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">可先使用 celecoxib 觀察症狀是否改善。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">可先以每日一次使用，症狀明顯改善後再降為隔日一次，最後視情況停藥。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Celecoxib 長期使用約 3 年，可能降低 colon/rectal cancer 風險，但仍可能影響腎功能，因此長期使用時需留意 renal function。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. Prostatitis 與檢查結果不一致</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">有 dysuria 或 painful voiding 並不一定是 acute urinary retention，也可能是 prostatitis。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">即使是 prostatitis，urinalysis 也可能沒有明顯異常，不能因 U/A 清楚就完全排除。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">三、BPH、排尿症狀與常用藥物調整</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Alpha-blocker 的調整</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Harnalidge（tamsulosin 類藥物）可依症狀與效果調整劑量。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">經驗用法包括：</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">1 顆 BID 改為 2 顆 QD。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">0.2 mg 製劑每日最高可到 4 顆。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">劑量調整應同時留意低血壓、頭暈等副作用。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. Doxazosin 類藥物</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Doxazosin / Doxaben 可上調至較高劑量。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">教學重點傾向一天一次規律服用；若拆開服用，多半是為了減少副作用，而非提升藥效。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. Minirin / Minrim（desmopressin 類）</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">夜間頻尿或 nocturnal polyuria 的某些病人可能會使用此類藥物。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">夜間使用時仍應注意整體水分平衡、血壓變化與電解質風險。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">4. Female voiding dysfunction</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">女性病人可使用低劑量 alpha-blocker，目的在於讓 bladder neck 更 open，以改善排尿。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">5. Foley catheter 更換頻率</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">一般 Foley catheter：大約每 2 週更換。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Silicone Foley：大約每 4 週更換。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Foley bag：大約每 1 週更換。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">6. Acute urinary retention / overdistension</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">無法排尿時，不一定都是感染或 prostatitis；需注意是否為膀胱過度擴張（overdistension）。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">年長病人更常見混合型機轉，不宜單一歸因。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">四、PSA、PHI、free PSA、切片與 MRI</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Borderline PSA 的輔助判斷</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">PHI borderline 可抓約 35 作為一個門診判斷參考點。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">在 borderline PSA 的情境下，可同時參考 free PSA。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">PHI 的定位，是作為降低不必要 prostate biopsy 的輔助工具，而不是完全取代臨床判斷。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. DRE 與 biopsy</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">即使 PSA 正常，只要 DRE 觸及可疑病灶，仍可考慮做 prostate biopsy。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">DRE 不能因 PSA 正常而被忽略。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. Prostate biopsy 後 MRI 的時間點</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Prostate biopsy 後不宜太早做 MRI。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">建議至少間隔約 6 週，以免 biopsy 後出血與組織變化影響影像判讀。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">4. TRUS-guided biopsy 的感染風險</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">TRUS biopsy 感染率約 2%。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">教學上仍應提醒病人注意發燒、排尿症狀與感染徵象。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">5. TRUS biopsy sample 的概念</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Biopsy core 的長度、形狀與 sample size 都會影響診斷品質。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">五、Prostate cancer：分期、TURP/TUEP 後 incidental cancer、MRI 與 DRE</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. TURP 後 incidental prostate cancer 分類</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若 TURP 病理中 incidental prostate cancer 占切除組織比例 <5%，歸為 T1a。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若占比 >5%，歸為 T1b。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. DRE 與 MRI 在 staging 的角色</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">AJCC 臨床分期仍重視 DRE。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">MRI 與 DRE 在局部分期上各有強項，不應互相取代。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若懷疑 T3a，MRI 會更有幫助；其他情境下 DRE 仍具重要性。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. PSA 上升的鑑別診斷</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">PSA 升高不等於 prostate cancer，仍須將 prostatitis 納入鑑別。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">門診判讀應整合 PSA、症狀、DRE、影像與必要時 biopsy。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">六、Active surveillance（AS）</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. AS 的核心不是只看 Gleason 總分</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">對於 Gleason 3+4 的個案，不能只記錄為「3+4」，而要進一步看：</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">pattern 3 與 pattern 4 的比例</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">total cancer involvement / total cancer percentage</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Gleason pattern 4 的百分比</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">這些資訊都會影響是否仍適合 active surveillance。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. AS 追蹤工具</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">MRI 與 repeat biopsy 都是 AS 的重要組成。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Repeat biopsy 的時間不宜拖太久，可抓不超過 6 個月。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. 體積與進展風險</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">即使是 seemingly low-grade disease，例如大量（profuse）3+3，仍可能在數年內出現 Gleason pattern 4 的進展。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">教學上要重視病灶體積、比例與動態追蹤，而非只看單一次病理分級。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">七、Focal therapy、RP 與 RT 的取捨</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Focal therapy 的限制</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Focal treatment 主要針對患側病灶。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">但 high-risk 病人對側仍可能有高比例的隱匿病灶，intermediate-risk 也不能過度樂觀。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">因此 focal therapy 的前提是病人選擇要非常嚴格。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. Radical prostatectomy（RP）與 radiotherapy（RT）</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">教學重點為：在某些情境下，RP 與 RT 的 oncological control 可能接近。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">真正差異常體現在 side effect profile，因此需由病人根據價值偏好做決策。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">八、Advanced prostate cancer：mCSPC、mCRPC、ARPI、ADT、影像與後線治療</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. 治療前影像與基礎評估</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">開始 ADT 前應先完成基礎檢驗，例如 PSA、testosterone、ALP、LDH，以及 spine X-ray。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若要做 staging MRI，應在開始系統治療前盡量完成。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. mCSPC</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">有脊椎轉移的 mCSPC 個案可考慮 ARPI。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若有 lung / bone metastasis，可考慮以 PSMA-PET 於治療後約 3–4 個月追蹤。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. ARPI 序列與健保可近性</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若先使用 enzalutamide，之後 disease progression，健保下不一定能再接續使用 apalutamide。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">這反映的是實務上的治療序列與給付限制問題。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">4. Abi 與 Enza 的風險提醒</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Abiraterone 的 cardiovascular risk 較 enzalutamide 高。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">實際用藥仍應依病人共病與風險因子綜合判斷。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">5. mCRPC</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Lu-177 可作為 mCRPC 治療選項之一，且屬自費情境。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">九、Bladder cancer、urine cytology 與 intravesical therapy</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Urine cytology</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若 urine cytology 顯示 suspicious，對 urothelial carcinoma 的懷疑度非常高。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">實務上應與 cystoscopy、影像與臨床症狀合併判讀。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. Intravesical instillation 的目的</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">灌注治療的目的是預防再發，而非單純處理當下症狀。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">對 high-risk bladder cancer / CIS，可考慮 MDP 或 BCG 等灌注治療策略。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. Blood clot tamponade</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Bladder tamponade with blood clot 可用於描述血塊造成膀胱出口阻塞的狀態。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">十、術後 PSA 與 TURP / TUEP 後追蹤</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. TURP / TUEP 後 PSA</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">TURP / TUEP 後，PSA 可能降至約 1 左右。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">因此術後 PSA 的解讀應以新的 baseline 為主，不能直接拿術前數值比較。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. 術後症狀評估</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若術後仍有漏尿或 urgency，應區分是 UUI 還是 SUI。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若 PSA 術後又再上升，需重新思考 residual gland、inflammation、infection 或 prostate cancer progression 等可能性。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">十一、其他門診實用 pearls</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. Stone pain 的飲水衛教</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若是急性 stone pain 發作時，不建議一直大量喝水；可待疼痛緩解後再恢復正常補水。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">這是門診中常用來修正常見迷思的實用提醒。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. Testosterone 與後續檢查</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Testosterone 正常值大約在 17 左右。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">若數值偏高，下一步可考慮 scrotal ultrasound。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">3. ED 與藥物合併</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">ED 病人可合併 alpha-blocker 與 Viga（應為 PDE5 inhibitor 類藥物）。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">約有部分病人可能出現 hypotension、dizziness，因此應由低劑量起始並觀察副作用。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">4. Fixed drug eruption</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">有一位個案記錄 fixed drug eruption，並提及 HSV-I / HSV-II 檢驗。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">此條較像個案討論重點，而非一般性原則。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">5. HGPIN 與代謝物追蹤</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Decipher III：HGPIN，可先補充茄紅素 8 週，之後觀察 urine 代謝物有無差異，再評估後續處置。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">十二、PHI（Prostate Health Index）重點整理</h3>
+<h4 style="margin:10px 0 4px;font-size:14px;">1. PHI 的臨床定位</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">PHI 結合 total PSA、free PSA 與 p2PSA。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">主要用途在提高 clinically significant prostate cancer 的篩檢專一性，並減少不必要 biopsy。</li>
+<h4 style="margin:10px 0 4px;font-size:14px;">2. 門診判斷上的用法</h4>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">在 PSA borderline、DRE 非明確異常、又猶豫是否切片的病人，PHI 可作為輔助資訊。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">但 PHI 不應脫離臨床脈絡單獨使用。</li>
+<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
+<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">十四、快速複習版</h3>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">做 UFM 時避免病人刻意用力；膀胱需有足夠充盈。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Kegel 訓練重點不只在收縮，也在完全放鬆。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Nocturia 懷疑 nocturnal polyuria 時，先做 bladder diary。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">CPPS 典型疼痛位置偏會陰部與大腿內側，不一定是陰囊痛。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Celecoxib 可作為 CPPS 的症狀控制藥物，長期使用可能降低 colon/rectal cancer 風險，但需留意腎功能。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">PSA 上升不只考慮癌症，也要想 prostatitis。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">DRE 可疑即使 PSA 正常，仍可考慮 biopsy。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Prostate biopsy 後 MRI 最好間隔約 6 週。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">TURP incidental cancer：<5% 為 T1a，>5% 為 T1b。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Active surveillance 要看 total cancer volume、pattern 4 比例與 MRI / repeat biopsy。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">RP 與 RT 常是 oncologic control 相近、side effect 不同的選擇。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">mCSPC / mCRPC 的治療需同時考慮 staging、藥物序列、共病與給付限制。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">Intravesical instillation 的目的是預防膀胱癌再發。</li>
+<li style="margin-left:20px;font-size:13px;line-height:1.6;">TURP / TUEP 後 PSA 需用新的 baseline 解讀。</li>
+</div>
+<div class="modal-btns"><button class="modal-btn secondary" onclick="closeModal('notesModal')">Close</button></div>
+</div></div>
 
 <!-- Echo Modal -->
 <div class="modal-overlay" id="echoModal"><div class="modal">
@@ -275,6 +490,31 @@ function applyLuts(){var s=[];
   if(document.getElementById("l_ie").checked)s.push("incomplete emptying");
   savedLuts=s;renderN();closeModal("lutsModal");}
 
+var PPU_S="S:\nInformant: patient\nCC: {chief_complaint}\n\nPI:\nInitial presentation:\nDiagnosis at {hospital} by Dr. {vs_name}\n{brief_history}\n\nBW change: {bw_change}\nIPSS: {ipss_score}\nIncomplete Emptying / Frequency / Intermittency / Urgency / Weak stream / Straining / Nocturia = {ipss_breakdown}. QoL = {qol}\nSexual Hx, IIEF: Erectile confidence / Initial hardness adequate for penetration? / Maintaining erection / Difficulty completing intercourse? / Satisfaction\n{iief_detail}\n\nPH:\nDM(-), HTN(-), CAD(-), COPD(-), Asthma(-), CVA(-)\nCurrent medication: {current_med}\nFamily history: {family_hx}\nAllergic history: {allergic_hx}\nSurgical history: {surgical_hx}\nSmoking / Alcohol / Betel nuts: {habits}\nSupplements: {supplements}\nChinese herbal medicine: {chinese_med}\nResidence: {residence} / Well water use: {well_water}\nOccupation: {occupation}\nExercise: {exercise}";
+var PPU_O="O:\nPSA: {psa_value}\nPain / Bone pain: {pain_status}\nECOG: {ecog}\nADL: {adl_status}\n\nDRE: {dre_findings}\nU/A: {ua_findings}\nTRUS-P: {trusp_findings}\nUFM: VV: {vv} mL, Qmax: {qmax} mL/s, PVR: {pvr} mL\nBiopsy result: {biopsy_result}\nImage: {imaging_findings}\nOP finding: {op_finding}";
+var PPU_A="A:\nDiagnosis:\n#. {diagnosis_1}\n#. {diagnosis_2}\n#. {diagnosis_3}";
+var PPU_P="P:\nU/A, PSA, UFM+PVR, renal echo, TRUS-P\nUrine cytology x 3, PFA-100\nIf Foley in situ => collect U/C\n\nADT, mCRPC => check testosterone level\nC+A+P CT\nDental survey\nRefer to RO for definitive RT\n\nTesticular tumor workup: AFP, beta-HCG, LDH, semen analysis, testosterone\n\nCommon ICD codes:\nR97.2 Elevated PSA\nN41.9 Prostatitis";
+
+var ppuTab='s';
+function switchMode(m){
+  if(m==='adm'){
+    document.querySelector('.main-area').style.display='flex';
+    document.getElementById('ppuScreen').style.display='none';
+    document.getElementById('modeAdm').style.background='#0071e3';document.getElementById('modeAdm').style.color='#fff';document.getElementById('modeAdm').style.borderColor='#0071e3';
+    document.getElementById('modePPu').style.background='#fff';document.getElementById('modePPu').style.color='#1d1d1f';document.getElementById('modePPu').style.borderColor='#d2d2d7';
+  }else{
+    document.querySelector('.main-area').style.display='none';
+    document.getElementById('ppuScreen').style.display='flex';
+    document.getElementById('modePPu').style.background='#0071e3';document.getElementById('modePPu').style.color='#fff';document.getElementById('modePPu').style.borderColor='#0071e3';
+    document.getElementById('modeAdm').style.background='#fff';document.getElementById('modeAdm').style.color='#1d1d1f';document.getElementById('modeAdm').style.borderColor='#d2d2d7';
+    renderPpu();
+  }
+}
+var ppuTN={s:'PPu OPD - Subjective',o:'PPu OPD - Objective',a:'PPu OPD - Assessment',p:'PPu OPD - Plan'};
+function switchPpu(t){ppuTab=t;document.querySelectorAll('[data-ppu]').forEach(function(e){e.classList.toggle('active',e.dataset.ppu===t);});document.getElementById('ppuTitle').textContent=ppuTN[t]||'';renderPpu();}
+function renderPpu(){var el=document.getElementById('ppuArea');switch(ppuTab){case 's':el.textContent=PPU_S;break;case 'o':el.textContent=PPU_O;break;case 'a':el.textContent=PPU_A;break;case 'p':el.textContent=PPU_P;break;}}
+function copyPpu(){var t=document.getElementById('ppuArea').textContent;if(!t)return;navigator.clipboard.writeText(t).then(function(){var ts=document.getElementById('toast');ts.textContent=ppuTN[ppuTab]+' copied!';ts.classList.add('show');setTimeout(function(){ts.classList.remove('show');},1500);});}
+function resetPpu(){renderPpu();}
 init();
 </script>
 </body>
