@@ -83,7 +83,10 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
       <div class="credit">Developed by CY Wu</div>
       <div style="font-size:10px;color:#aeaeb2;margin-bottom:4px;">v2.5 | Updated 2026-03-27</div>
     </div>
-    <button onclick="document.getElementById('helpModal').classList.add('show')" style="background:#0071e3;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;">?</button>
+    <div style="display:flex;gap:6px;margin-top:4px;">
+      <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSd5EDJWg4m2td7gLAa4m43oYjmaI3FO4rvp6NrZCdfBJAZwbA/viewform','_blank')" style="background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:14px;padding:4px 12px;font-size:11px;font-weight:600;cursor:pointer;">Feedback</button>
+      <button onclick="document.getElementById('helpModal').classList.add('show')" style="background:#0071e3;color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:15px;font-weight:700;cursor:pointer;">?</button>
+    </div>
   </div>
   <div class="mode-bar">
     <div class="mode-tab active" id="modeAdm" onclick="switchMode('adm')">Admission Note</div>
