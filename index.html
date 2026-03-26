@@ -7,7 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:#f5f5f7;color:#1d1d1f;height:100vh;display:flex;flex-direction:column;}
-.top-bar{background:#fff;position:relative;border-bottom:1px solid #d2d2d7;padding:12px 20px;flex-shrink:0;}
+.top-bar{background:#fff;border-bottom:1px solid #d2d2d7;padding:12px 20px;flex-shrink:0;}
 .top-bar h1{font-size:22px;font-weight:700;}
 .top-bar .credit{font-size:11px;color:#86868b;margin-bottom:6px;}
 .search-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
@@ -61,9 +61,14 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 </head>
 <body>
 <div class="top-bar">
-  <h1>NTUH Urology Admission Note Generator</h1>
-  <div style="position:absolute;top:12px;right:20px;display:flex;gap:6px;"><button class="btn" id="modeAdm" onclick="switchMode('adm')" style="font-size:13px;padding:5px 14px;font-weight:700;background:#0071e3;color:#fff;border-color:#0071e3;">Admission Note</button><button class="btn" id="modePPu" onclick="switchMode('ppu')" style="font-size:13px;padding:5px 14px;font-weight:700;">PPu OPD</button></div>
-  <div class="credit">Developed by CY Wu <span style="float:right;color:#86868b;font-size:10px;">v2.2 | Updated 2026-03-27 | 34 procedures, 9 groups | Echo/Cysto builder, LUTS selector</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1>NTUH Urology Admission Note Generator</h1>
+    <div style="display:flex;gap:6px;">
+      <button class="btn" id="modeAdm" onclick="switchMode('adm')" style="font-size:13px;padding:5px 14px;font-weight:700;background:#0071e3;color:#fff;border-color:#0071e3;">Admission Note</button>
+      <button class="btn" id="modePPu" onclick="switchMode('ppu')" style="font-size:13px;padding:5px 14px;font-weight:700;">PPu OPD</button>
+    </div>
+  </div>
+  <div class="credit">Developed by CY Wu <span style="float:right;color:#86868b;font-size:10px;">v2.3 | Updated 2026-03-27 | 34 procedures | Echo/Cysto/LUTS tools | PPu OPD</span></div>
   <div class="search-row"><label>Search:</label><input type="text" id="searchInput" placeholder="Type procedure name..."></div>
   <div class="kw-bar" id="kwBar"></div>
 </div>
@@ -95,7 +100,7 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
     <div class="note-area" id="noteArea" contenteditable="true"><span style="color:#86868b;font-family:-apple-system,sans-serif;">Select a procedure on the left.</span></div>
   </div>
 
-<div id="ppuScreen" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+<div id="ppuScreen" style="display:none;flex:1;padding:10px;overflow:hidden;">
   <div class="col-right" style="height:100%;margin:0;">
     <div class="col-header">
       <span id="ppuTitle">PPu OPD - Subjective</span>
@@ -500,11 +505,13 @@ function switchMode(m){
   if(m==='adm'){
     document.querySelector('.main-area').style.display='flex';
     document.getElementById('ppuScreen').style.display='none';
+    document.getElementById('ppuScreen').style.height='0';
     document.getElementById('modeAdm').style.background='#0071e3';document.getElementById('modeAdm').style.color='#fff';document.getElementById('modeAdm').style.borderColor='#0071e3';
     document.getElementById('modePPu').style.background='#fff';document.getElementById('modePPu').style.color='#1d1d1f';document.getElementById('modePPu').style.borderColor='#d2d2d7';
   }else{
     document.querySelector('.main-area').style.display='none';
-    document.getElementById('ppuScreen').style.display='flex';
+    document.getElementById('ppuScreen').style.display='block';
+    document.getElementById('ppuScreen').style.height='calc(100vh - 120px)';
     document.getElementById('modePPu').style.background='#0071e3';document.getElementById('modePPu').style.color='#fff';document.getElementById('modePPu').style.borderColor='#0071e3';
     document.getElementById('modeAdm').style.background='#fff';document.getElementById('modeAdm').style.color='#1d1d1f';document.getElementById('modeAdm').style.borderColor='#d2d2d7';
     renderPpu();
