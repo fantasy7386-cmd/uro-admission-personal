@@ -62,6 +62,17 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 .gender-toggle{display:flex;gap:8px;justify-content:center;margin-bottom:10px;}
 .gender-toggle button{padding:5px 18px;border:1px solid #d2d2d7;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;}
 .gender-toggle button.active{background:#0071e3;color:#fff;border-color:#0071e3;}
+
+.help-btn{position:fixed;bottom:20px;left:20px;width:36px;height:36px;border-radius:50%;background:#0071e3;color:#fff;font-size:18px;font-weight:700;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:50;display:flex;align-items:center;justify-content:center;}
+.help-btn:hover{background:#005bb5;}
+.help-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;justify-content:center;align-items:center;}
+.help-modal.show{display:flex;}
+.help-content{background:#fff;border-radius:12px;padding:28px 32px;width:650px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.2);}
+.help-content h2{font-size:20px;margin-bottom:16px;text-align:center;}
+.help-content h3{font-size:15px;margin:14px 0 6px;color:#0071e3;}
+.help-content p,.help-content li{font-size:13px;line-height:1.7;margin:4px 0;}
+.help-content ol,.help-content ul{padding-left:20px;}
+.help-close{display:block;margin:16px auto 0;padding:8px 24px;border:none;border-radius:8px;background:#e5e5ea;font-size:14px;cursor:pointer;font-weight:600;}
 </style>
 </head>
 <body>
@@ -576,5 +587,60 @@ function renderFigs(){
 }
 init();
 </script>
+
+<button class="help-btn" onclick="document.getElementById('helpModal').classList.add('show')">?</button>
+<div class="help-modal" id="helpModal">
+<div class="help-content">
+<h2>How to Use — Clinical Note Generator</h2>
+
+<h3>Three Modes (top tabs)</h3>
+<ul>
+<li><strong>Admission Note</strong> — Generate structured admission notes by procedure</li>
+<li><strong>PPu OPD</strong> — Professor outpatient clinic SOAP template</li>
+<li><strong>URO Figure</strong> — Reference images for clinical note writing</li>
+</ul>
+
+<h3>Admission Note</h3>
+<ol>
+<li><strong>Select a procedure</strong> from the left panel (grouped by type: Endoscopic, Robotic, etc.). Use the search bar or keyword buttons to filter.</li>
+<li><strong>Switch between 7 tabs</strong> on the right panel — each corresponds to a section of the hospital EMR:
+  <ul>
+  <li><strong>Chief Complaint</strong> — One-liner with "admitted for {procedure}"</li>
+  <li><strong>Brief History</strong> — Present illness with clinical details and placeholders</li>
+  <li><strong>Tentative Diagnosis</strong> — Active problems</li>
+  <li><strong>Medical Needs & Care Plan</strong> — Full SOAP note + Treatment Goal</li>
+  <li><strong>Physical Exam / Review of Systems / Lab & Exam</strong> — Standard templates</li>
+  </ul>
+</li>
+<li><strong>Edit</strong> the text directly in the browser, then click <strong>Copy</strong> to paste into your EMR.</li>
+<li><strong>Reset</strong> returns to the original template.</li>
+</ol>
+
+<h3>Interactive Tools (buttons in header)</h3>
+<ul>
+<li><strong>Renal Echo</strong> — Build echo findings by selecting options (hydronephrosis, stones, cysts, etc.) or paste a formal report. Applied to all tabs automatically.</li>
+<li><strong>Cystoscopy</strong> — Build cystoscopy findings (Male/Female toggle). Applied to all tabs automatically.</li>
+<li><strong>LUTS Select</strong> — Check applicable symptoms (frequency, urgency, nocturia, etc.). Updates Chief Complaint, Brief History, and Diagnosis simultaneously.</li>
+<li>Green button = data has been entered and applied.</li>
+</ul>
+
+<h3>PPu OPD</h3>
+<p>Switch to PPu OPD mode for the professor outpatient clinic template. Four tabs: Subjective / Objective / Assessment / Plan. Click <strong>OPD Notes</strong> to view teaching notes with clinical pearls and evidence summaries.</p>
+
+<h3>URO Figure</h3>
+<p>Reference images for clinical documentation. Click a figure name on the left to view it full-size on the right.</p>
+
+<h3>Tips</h3>
+<ul>
+<li>All text areas are editable — click to modify, then Copy</li>
+<li>{placeholders} are meant to be replaced with patient-specific data</li>
+<li>Templates are based on real clinical notes, not AI-generated</li>
+<li>Password required for shared version</li>
+</ul>
+
+<button class="help-close" onclick="document.getElementById('helpModal').classList.remove('show')">Got it</button>
+</div>
+</div>
+
 </body>
 </html>
