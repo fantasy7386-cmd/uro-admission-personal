@@ -137,10 +137,6 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 <div class="modal-overlay" id="notesModal"><div class="modal" style="width:700px;max-height:90vh;">
 <h2>PPu OPD Teaching Notes</h2>
 <div style="overflow-y:auto;max-height:75vh;padding:0 10px;">
-<h2 style="margin:16px 0 8px;font-size:18px;">乾淨版門診教學筆記</h2>
-<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">說明</h3>
-<p style="font-size:13px;line-height:1.6;margin:4px 0;">本筆記係依 7 張手寫門診照片內容重新整理，已依主題歸類，並以較標準的泌尿科語言重寫。少數原始筆跡不清、語意無法完全確定之處，已於最後以「待核對」方式保留，不強行補寫。</p>
-<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">
 <h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">一、LUTS、排尿機轉與門診功能評估</h3>
 <h4 style="margin:10px 0 4px;font-size:14px;">1. Uroflowmetry（UFM）判讀重點</h4>
 <li style="margin-left:20px;font-size:13px;line-height:1.6;">做 UFM 時，應避免病人刻意以腹壓或主動用力排尿，否則流速曲線可能失真。</li>
@@ -507,8 +503,8 @@ function applyLuts(){var s=[];
   if(document.getElementById("l_ie").checked)s.push("incomplete emptying");
   savedLuts=s;renderN();closeModal("lutsModal");}
 
-var PPU_S="S:\nInformant: patient\nCC: {chief_complaint}\n\nPI:\nInitial presentation:\nDiagnosis at {hospital} by Dr. {vs_name}\n{brief_history}\n\nBW change: {bw_change}\nIPSS: {ipss_score}\nIncomplete Emptying / Frequency / Intermittency / Urgency / Weak stream / Straining / Nocturia = {ipss_breakdown}. QoL = {qol}\nSexual Hx, IIEF: Erectile confidence / Initial hardness adequate for penetration? / Maintaining erection / Difficulty completing intercourse? / Satisfaction\n{iief_detail}\n\nPH:\nDM(-), HTN(-), CAD(-), COPD(-), Asthma(-), CVA(-)\nCurrent medication: {current_med}\nFamily history: {family_hx}\nAllergic history: {allergic_hx}\nSurgical history: {surgical_hx}\nSmoking / Alcohol / Betel nuts: {habits}\nSupplements: {supplements}\nChinese herbal medicine: {chinese_med}\nResidence: {residence} / Well water use: {well_water}\nOccupation: {occupation}\nExercise: {exercise}";
-var PPU_O="O:\nPSA: {psa_value}\nPain / Bone pain: {pain_status}\nECOG: {ecog}\nADL: {adl_status}\n\nDRE: {dre_findings}\nU/A: {ua_findings}\nTRUS-P: {trusp_findings}\nUFM: VV: {vv} mL, Qmax: {qmax} mL/s, PVR: {pvr} mL\nBiopsy result: {biopsy_result}\nImage: {imaging_findings}\nOP finding: {op_finding}";
+var PPU_S="S:\nInformant: patient\nCC: {chief_complaint}\n\nPI:\nInitial presentation:\nDiagnosis at {hospital} by Dr. {vs_name}\n{brief_history}\n\nBW change: {bw_change}\nIPSS: {ipss_score}\nIncomplete Emptying / Frequency / Intermittency / Urgency / Weak stream / Straining / Nocturia = {ipss_breakdown}. QoL = {qol}\nSexual Hx, IIEF: Erectile confidence / Initial hardness adequate for penetration? / Maintaining erection / Difficulty completing intercourse? / Satisfaction\n{iief_detail}\n\nPH:\nDM(-), HTN(-), CAD(-), COPD(-), Asthma(-), CVA(-)\nCurrent medication: {current_med}\nFamily history: {family_hx}\nAllergic history: {allergic_hx}\nSurgical history: {surgical_hx}\nSmoking / Alcohol / Betel nuts: {habits}\nSupplements: {supplements}\nChinese herbal medicine: {chinese_med}\nResidence: {residence} / Well water use: {well_water}\nOccupation: {occupation}\nExercise: {exercise}\n\n(R_\u653f\u967d)";
+var PPU_O="O:\nPSA: {psa_value}\nPain / Bone pain: {pain_status}\nECOG: {ecog} (Tip: ECOG 2 = less than 50% of time in bed; must be ECOG 0-2 to receive chemotherapy)\nADL: {adl_status}\n\nDRE: {dre_findings}\nU/A: {ua_findings}\nTRUS-P: {trusp_findings}\nUFM: VV: {vv} mL, Qmax: {qmax} mL/s, PVR: {pvr} mL\nBiopsy result: {biopsy_result}\nImage: {imaging_findings}\nOP finding: {op_finding}";
 var PPU_A="A:\nDiagnosis:\n#. {diagnosis_1}\n#. {diagnosis_2}\n#. {diagnosis_3}";
 var PPU_P="P:\nU/A, PSA, UFM+PVR, renal echo, TRUS-P\nUrine cytology x 3, PFA-100\nIf Foley in situ => collect U/C\n\nADT, mCRPC => check testosterone level\nC+A+P CT\nDental survey\nRefer to RO for definitive RT\n\nTesticular tumor workup: AFP, beta-HCG, LDH, semen analysis, testosterone\n\nCommon ICD codes:\nR97.2 Elevated PSA\nN41.9 Prostatitis";
 
