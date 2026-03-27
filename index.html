@@ -153,7 +153,8 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 
 <div class="modal-overlay" id="notesModal"><div class="modal" style="width:700px;max-height:90vh;">
 <h2>PPu Teaching Notes</h2>
-<div style="overflow-y:auto;max-height:75vh;padding:0 10px;">
+<div id="teachingNotesContent" style="overflow-y:auto;max-height:75vh;padding:0 10px;"><p style="color:#888;text-align:center;padding:40px;">Loading Teaching Notes...</p></div>
+<div id="teachingNotesFallback" style="display:none;overflow-y:auto;max-height:75vh;padding:0 10px;">
 <h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">一、LUTS、排尿機轉與門診功能評估</h3>
 <h4 style="margin:10px 0 4px;font-size:14px;">1. Uroflowmetry（UFM）判讀重點</h4>
 <li style="margin-left:20px;font-size:13px;line-height:1.6;">做 UFM 時，應避免病人刻意以腹壓或主動用力排尿，否則流速曲線可能失真。</li>
@@ -356,6 +357,7 @@ body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;background:
 <li style="margin-left:20px;font-size:13px;line-height:1.6;">Intravesical instillation 的目的是預防膀胱癌再發。</li>
 <li style="margin-left:20px;font-size:13px;line-height:1.6;">TURP / TUEP 後 PSA 需用新的 baseline 解讀。</li>
 </div>
+</div><!-- end fallback -->
 <div class="modal-btns"><button class="modal-btn secondary" onclick="closeModal('notesModal')">Close</button></div>
 </div></div>
 
@@ -506,7 +508,37 @@ function renderN(){var el=document.getElementById("noteArea");if(!cP){el.innerHT
 function resetNote(){savedEcho="";savedCysto="";savedLuts=[];renderN();updBtns();}
 function copyNote(){var t=document.getElementById("noteArea").textContent;if(!t||t.startsWith("Select"))return;navigator.clipboard.writeText(t).then(function(){var ts=document.getElementById("toast");ts.textContent=TN[cT]+" copied!";ts.classList.add("show");setTimeout(function(){ts.classList.remove("show");},1500);});}
 
-function openModal(id){document.getElementById(id).classList.add("show");}
+function openModal(id){
+  document.getElementById(id).classList.add("show");
+  if(id==='notesModal') loadTeachingNotes();
+}
+
+let _tnLoaded = false;
+function loadTeachingNotes(){
+  if(_tnLoaded) return;
+  const container = document.getElementById('teachingNotesContent');
+  const fallback = document.getElementById('teachingNotesFallback');
+  const NOTES_URL = 'https://fantasy7386-cmd.github.io/pocket-ppu/teaching-notes.json';
+  const CACHE_KEY = 'uro_teaching_notes_cache';
+  fetch(NOTES_URL).then(r => r.json()).then(data => {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    container.innerHTML = renderTeachingNotesHTML(data);
+    _tnLoaded = true;
+  }).catch(() => {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if(cached){ try{ container.innerHTML = renderTeachingNotesHTML(JSON.parse(cached)); _tnLoaded = true; return; }catch(e){} }
+    container.innerHTML = fallback.innerHTML; _tnLoaded = true;
+  });
+}
+function renderTeachingNotesHTML(data){
+  let html = '';
+  for(const sec of data.sections){
+    html += '<h3 style="margin:14px 0 6px;font-size:16px;color:#0071e3;">'+sec.full_title+'</h3>';
+    for(const sub of sec.subsections){ if(sub.title) html += '<h4 style="margin:10px 0 4px;font-size:14px;">'+sub.title+'</h4>';
+      for(const item of sub.items){ html += '<li style="margin-left:20px;font-size:13px;line-height:1.6;">'+item.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</li>'; }
+    } html += '<hr style="margin:12px 0;border:none;border-top:1px solid #e5e5ea;">';
+  } return html;
+}
 function closeModal(id){document.getElementById(id).classList.remove("show");}
 
 // === Echo: build findings only (no prefix) ===
